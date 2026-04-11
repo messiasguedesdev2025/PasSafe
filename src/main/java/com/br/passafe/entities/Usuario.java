@@ -2,7 +2,7 @@ package com.br.passafe.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,9 +19,12 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    private String nivelAcesso; // Ex: "ADMIN, "DEV!, VIEWER"
+    private boolean isActivated = false; // Ativado ou não
+
+    private String verificationCode; // O código que será enviado por email
+
+    private LocalDateTime verificationCodeExpiresAt; // Validade do código
 
     @OneToMany(mappedBy = "owner")
-    private List<Secret> secrets ;
-
+    private List<Secret> secrets;
 }
