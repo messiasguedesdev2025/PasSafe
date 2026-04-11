@@ -19,11 +19,11 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    private boolean isActivated = false; // Ativado ou não
+    private boolean activated;
 
-    private String verificationCode; // O código que será enviado por email
+    private String verificationCode;
 
-    private LocalDateTime verificationCodeExpiresAt; // Validade do código
+    private LocalDateTime verificationCodeExpiresAt;
 
     @OneToMany(mappedBy = "owner")
     private List<Secret> secrets;

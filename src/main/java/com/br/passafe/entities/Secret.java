@@ -25,6 +25,9 @@ public class Secret {
     @Column(columnDefinition = "TEXT")
     private String encryptedTotpKey; // Chave secreta A2F (TOTP)
 
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String encryptedPassword; // Senha criptografada do site
+
     @Column(nullable = false, updatable = false)
     @CreatedDate
     private LocalDateTime createdAt; // Quando foi criado

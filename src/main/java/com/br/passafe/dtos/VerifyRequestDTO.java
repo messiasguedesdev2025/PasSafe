@@ -6,10 +6,9 @@ import lombok.Data;
 
 @Data
 public class VerifyRequestDTO {
-    @Email(message = "E-mail inválido")
-    @NotBlank(message = "E-mail é obrigatório")
+    @NotBlank
+    @Email
     private String email;
-
-    @NotBlank(message = "O código é obrigatório")
+    @NotBlank
     private String code;
 }

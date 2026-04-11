@@ -9,7 +9,7 @@ public class SecretResponseDTO {
     private String title;
     private String siteUrl;
     private String usernameInSite;
-    private String encryptedPassword;
+    private String password;
     private String encryptedTotpKey;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

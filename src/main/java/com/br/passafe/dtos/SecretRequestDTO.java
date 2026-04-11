@@ -13,8 +13,8 @@ public class SecretRequestDTO {
     @NotBlank(message = "O usuário do site é obrigatório")
     private String usernameInSite;
 
-    @NotBlank(message = "A senha criptografada é obrigatória")
-    private String encryptedPassword;
+    @NotBlank(message = "A senha é obrigatória")
+    private String password;
 
     private String encryptedTotpKey; // Opcional (2FA)
 }

@@ -1,0 +1,50 @@
+{
+  "auth": {
+    "register": {
+      "method": "POST",
+      "url": "http://localhost:8080/auth/register",
+      "body": {
+        "email": "tamiresoak@gmail.com",
+        "password": "1234"
+      },
+      "description": "Cria um novo usuário. Verifique o console do IDE para o código de 6 dígitos."
+    },
+    "verify": {
+      "method": "POST",
+      "url": "http://localhost:8080/auth/verify",
+      "body": {
+        "email": "teste@exemplo.com",
+        "code": "123456"
+      },
+      "description": "Ativa a conta usando o código recebido no console."
+    },
+    "login": {
+      "method": "POST",
+      "url": "http://localhost:8080/auth/login",
+      "body": {
+        "email": "teste@exemplo.com",
+        "password": "Senha@Forte123!"
+      },
+      "description": "Faz login e recebe um Token de acesso (UUID)."
+    }
+  },
+  "secrets": {
+    "save": {
+      "method": "POST",
+      "url": "http://localhost:8080/secrets?email=teste@exemplo.com",
+      "body": {
+        "title": "GitHub",
+        "siteUrl": "https://github.com",
+        "usernameInSite": "carvalhotamires",
+        "encryptedPassword": "MinhaSenhaSuperSecreta123",
+        "encryptedTotpKey": "JBSWY3DPEHPK3PXP"
+      },
+      "description": "Salva uma nova senha no cofre. A senha será criptografada com AES-256 no banco."
+    },
+    "listAll": {
+      "method": "GET",
+      "url": "http://localhost:8080/secrets?email=teste@exemplo.com",
+      "description": "Lista todas as senhas do usuário. O servidor devolve as senhas já descriptografadas."
+    }
+  }
+}

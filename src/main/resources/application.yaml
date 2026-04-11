@@ -1,11 +1,13 @@
 spring:
   application:
     name: passafe
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/passafe_db
-    username: seu_usuario
-    password: sua_senha
-    driver-class-name: org.postgresql.Driver
+    # Ajuste para SQL Server (SQL Express)
+    url: jdbc:sqlserver://localhost:1433;databaseName=passafe;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: SUASENHA_AQUI
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
     hibernate:
@@ -13,4 +15,10 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
+
+# Chave de Criptografia AES-256 (32 caracteres)
+passafe:
+  encryption:
+    key: ${PASSAFE_SECRET_KEY:12345678901234567890123456789012}

@@ -1,5 +1,6 @@
 package com.br.passafe.service;
 
+import com.br.passafe.dtos.LoginRequestDTO;
 import com.br.passafe.dtos.UsuarioRequestDTO;
 import com.br.passafe.dtos.VerifyRequestDTO;
 import com.br.passafe.entities.Usuario;
@@ -16,6 +17,7 @@ import java.util.Random;
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
+    private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
     public void register(UsuarioRequestDTO request) {
@@ -28,14 +30,12 @@ public class AuthService {
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         usuario.setActivated(false);
         
-        // Gera o código de 6 dígitos
         String code = String.format("%06d", new Random().nextInt(999999));
         usuario.setVerificationCode(code);
-        usuario.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15)); // Expira em 15 min
+        usuario.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
 
         usuarioRepository.save(usuario);
 
-        // TODO: Enviar o e-mail com o código (usar JavaMailSender no futuro)
         System.out.println("CÓDIGO DE VERIFICAÇÃO PARA " + request.getEmail() + ": " + code);
     }
 
@@ -52,12 +52,30 @@ public class AuthService {
         }
 
         if (usuario.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("O código expirou! Gere um novo.");
+            throw new RuntimeException("O código expirou!");
         }
 
         usuario.setActivated(true);
         usuario.setVerificationCode(null);
         usuario.setVerificationCodeExpiresAt(null);
         usuarioRepository.save(usuario);
+    }
+
+    /**
+     * Faz o Login e devolve um Token de Acesso.
+     */
+    public String login(LoginRequestDTO request) {
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("E-mail ou senha incorretos!"));
+
+        if (!usuario.isActivated()) {
+            throw new RuntimeException("Por favor, ative sua conta primeiro!");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+            throw new RuntimeException("E-mail ou senha incorretos!");
+        }
+
+        return tokenService.generateToken(usuario.getEmail());
     }
 }
