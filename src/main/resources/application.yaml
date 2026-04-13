@@ -18,7 +18,11 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.SQLServerDialect
 
-# Chave de Criptografia AES-256 (32 caracteres)
+# Configurações de Cibersegurança do PasSafe
 passafe:
+  # Chave AES-256 para as senhas no banco (32 caracteres)
   encryption:
     key: ${PASSAFE_SECRET_KEY:12345678901234567890123456789012}
+  # Chave JWT para autenticação no login (mínimo 64 caracteres)
+  jwt:
+    secret: 1234567890123456789012345678901212345678901234567890123456789012
