@@ -2,14 +2,12 @@ package com.br.passafe.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
-@Data
-public class LoginRequestDTO {
-    @NotBlank
-    @Email
-    private String email;
+public record LoginRequestDTO(
+    @Email(message = "E-mail inválido")
+    @NotBlank(message = "E-mail é obrigatório")
+    String email,
 
-    @NotBlank
-    private String password;
-}
+    @NotBlank(message = "Senha é obrigatória")
+    String password
+) {}

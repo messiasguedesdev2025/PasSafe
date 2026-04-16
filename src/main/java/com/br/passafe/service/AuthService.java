@@ -17,17 +17,17 @@ import java.util.Random;
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
-    private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     public void register(UsuarioRequestDTO request) {
-        if (usuarioRepository.existsByEmail(request.getEmail())) {
+        if (usuarioRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Este e-mail já está em uso!");
         }
 
         Usuario usuario = new Usuario();
-        usuario.setEmail(request.getEmail());
-        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+        usuario.setEmail(request.email());
+        usuario.setPassword(passwordEncoder.encode(request.password()));
         usuario.setActivated(false);
         
         String code = String.format("%06d", new Random().nextInt(999999));
@@ -36,18 +36,18 @@ public class AuthService {
 
         usuarioRepository.save(usuario);
 
-        System.out.println("CÓDIGO DE VERIFICAÇÃO PARA " + request.getEmail() + ": " + code);
+        System.out.println("CÓDIGO DE VERIFICAÇÃO PARA " + request.email() + ": " + code);
     }
 
     public void verify(VerifyRequestDTO request) {
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+        Usuario usuario = usuarioRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("E-mail não encontrado!"));
 
         if (usuario.isActivated()) {
             throw new RuntimeException("Este usuário já está ativado!");
         }
 
-        if (!usuario.getVerificationCode().equals(request.getCode())) {
+        if (!usuario.getVerificationCode().equals(request.code())) {
             throw new RuntimeException("Código de verificação incorreto!");
         }
 
@@ -61,21 +61,19 @@ public class AuthService {
         usuarioRepository.save(usuario);
     }
 
-    /**
-     * Faz o Login e devolve um Token de Acesso.
-     */
     public String login(LoginRequestDTO request) {
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+        Usuario usuario = usuarioRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("E-mail ou senha incorretos!"));
 
         if (!usuario.isActivated()) {
             throw new RuntimeException("Por favor, ative sua conta primeiro!");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), usuario.getPassword())) {
             throw new RuntimeException("E-mail ou senha incorretos!");
         }
 
+        // CORREÇÃO: Entidade usa getEmail(), Record usa email()
         return tokenService.generateToken(usuario.getEmail());
     }
 }

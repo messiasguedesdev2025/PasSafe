@@ -30,11 +30,11 @@ public class SecretService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
 
         Secret secret = new Secret();
-        secret.setTitle(request.getTitle());
-        secret.setSiteUrl(request.getSiteUrl());
-        secret.setUsernameInSite(request.getUsernameInSite());
+        secret.setTitle(request.title());
+        secret.setSiteUrl(request.siteUrl());
+        secret.setUsernameInSite(request.usernameInSite());
         secret.setOwner(owner);
-        secret.setEncryptedTotpKey(encryptionService.encrypt(request.getPassword()));
+        secret.setEncryptedTotpKey(encryptionService.encrypt(request.password()));
 
         Secret saved = secretRepository.save(secret);
         return convertToResponse(saved);
@@ -49,23 +49,20 @@ public class SecretService {
             throw new RuntimeException("Você não tem permissão para editar esta senha!");
         }
 
-        // --- Lógica de Histórico de 5 Senhas ---
         PasswordHistory history = new PasswordHistory();
         history.setEncryptedPassword(secret.getEncryptedTotpKey());
         history.setSecret(secret);
         passwordHistoryRepository.save(history);
 
-        // Busca o histórico e mantém apenas as 5 mais recentes
         List<PasswordHistory> histories = passwordHistoryRepository.findBySecretOrderByCreatedAtDesc(secret);
         if (histories.size() > 5) {
             passwordHistoryRepository.deleteAll(histories.subList(5, histories.size()));
         }
-        // --------------------------------------
 
-        secret.setTitle(request.getTitle());
-        secret.setSiteUrl(request.getSiteUrl());
-        secret.setUsernameInSite(request.getUsernameInSite());
-        secret.setEncryptedTotpKey(encryptionService.encrypt(request.getPassword()));
+        secret.setTitle(request.title());
+        secret.setSiteUrl(request.siteUrl());
+        secret.setUsernameInSite(request.usernameInSite());
+        secret.setEncryptedTotpKey(encryptionService.encrypt(request.password()));
 
         Secret updated = secretRepository.save(secret);
         return convertToResponse(updated);
@@ -104,18 +101,21 @@ public class SecretService {
     }
 
     private SecretResponseDTO convertToResponse(Secret secret) {
-        SecretResponseDTO response = new SecretResponseDTO();
-        response.setId(secret.getId());
-        response.setTitle(secret.getTitle());
-        response.setSiteUrl(secret.getSiteUrl());
-        response.setUsernameInSite(secret.getUsernameInSite());
-        
+        String decryptedPassword = null;
         if (secret.getEncryptedTotpKey() != null) {
-            response.setPassword(encryptionService.decrypt(secret.getEncryptedTotpKey()));
+            decryptedPassword = encryptionService.decrypt(secret.getEncryptedTotpKey());
         }
-        
-        response.setCreatedAt(secret.getCreatedAt());
-        response.setUpdatedAt(secret.getUpdatedAt());
-        return response;
+
+        return new SecretResponseDTO(
+            secret.getId(),
+            secret.getTitle(),
+            secret.getSiteUrl(),
+            secret.getUsernameInSite(),
+            decryptedPassword,
+            secret.getEncryptedTotpKey(),
+            secret.getCreatedAt(),
+            secret.getUpdatedAt(),
+            secret.getLastAutoFillAt()
+        );
     }
 }

@@ -2,13 +2,12 @@ package com.br.passafe.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
-@Data
-public class VerifyRequestDTO {
-    @NotBlank
-    @Email
-    private String email;
-    @NotBlank
-    private String code;
-}
+public record VerifyRequestDTO(
+    @NotBlank(message = "E-mail é obrigatório")
+    @Email(message = "E-mail inválido")
+    String email,
+
+    @NotBlank(message = "O código é obrigatório")
+    String code
+) {}
