@@ -4,8 +4,10 @@ import com.br.passafe.dtos.LoginRequestDTO;
 import com.br.passafe.dtos.UsuarioRequestDTO;
 import com.br.passafe.dtos.VerifyRequestDTO;
 import com.br.passafe.entities.Usuario;
+import com.br.passafe.exception.AuthException;
 import com.br.passafe.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j // Ativa os Logs profissionais
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
@@ -22,7 +25,7 @@ public class AuthService {
 
     public void register(UsuarioRequestDTO request) {
         if (usuarioRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Este e-mail já está em uso!");
+            throw new AuthException("Este e-mail já está em uso!");
         }
 
         Usuario usuario = new Usuario();
@@ -36,44 +39,47 @@ public class AuthService {
 
         usuarioRepository.save(usuario);
 
-        System.out.println("CÓDIGO DE VERIFICAÇÃO PARA " + request.email() + ": " + code);
+        log.info("Novo registro solicitado para o e-mail: {}", request.email());
+        log.warn("CÓDIGO DE VERIFICAÇÃO GERADO: {}", code);
     }
 
     public void verify(VerifyRequestDTO request) {
         Usuario usuario = usuarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("E-mail não encontrado!"));
+                .orElseThrow(() -> new AuthException("E-mail não encontrado!"));
 
         if (usuario.isActivated()) {
-            throw new RuntimeException("Este usuário já está ativado!");
+            throw new AuthException("Este usuário já está ativado!");
         }
 
         if (!usuario.getVerificationCode().equals(request.code())) {
-            throw new RuntimeException("Código de verificação incorreto!");
+            throw new AuthException("Código de verificação incorreto!");
         }
 
         if (usuario.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("O código expirou!");
+            throw new AuthException("O código expirou!");
         }
 
         usuario.setActivated(true);
         usuario.setVerificationCode(null);
         usuario.setVerificationCodeExpiresAt(null);
         usuarioRepository.save(usuario);
+        
+        log.info("Conta ativada com sucesso para o e-mail: {}", request.email());
     }
 
     public String login(LoginRequestDTO request) {
         Usuario usuario = usuarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("E-mail ou senha incorretos!"));
+                .orElseThrow(() -> new AuthException("E-mail ou senha incorretos!"));
 
         if (!usuario.isActivated()) {
-            throw new RuntimeException("Por favor, ative sua conta primeiro!");
+            throw new AuthException("Por favor, ative sua conta primeiro!");
         }
 
         if (!passwordEncoder.matches(request.password(), usuario.getPassword())) {
-            throw new RuntimeException("E-mail ou senha incorretos!");
+            throw new AuthException("E-mail ou senha incorretos!");
         }
 
-        // CORREÇÃO: Entidade usa getEmail(), Record usa email()
+        log.info("Login realizado com sucesso: {}", request.email());
         return tokenService.generateToken(usuario.getEmail());
     }
 }

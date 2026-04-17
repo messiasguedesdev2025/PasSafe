@@ -9,6 +9,7 @@ import com.br.passafe.repositories.PasswordHistoryRepository;
 import com.br.passafe.repositories.SecretRepository;
 import com.br.passafe.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SecretService {
 
     private final SecretRepository secretRepository;
@@ -37,6 +39,7 @@ public class SecretService {
         secret.setEncryptedTotpKey(encryptionService.encrypt(request.password()));
 
         Secret saved = secretRepository.save(secret);
+        log.info("Nova credencial salva para o usuário {}: {}", email, request.title());
         return convertToResponse(saved);
     }
 
@@ -46,6 +49,7 @@ public class SecretService {
                 .orElseThrow(() -> new RuntimeException("Senha não encontrada!"));
 
         if (!secret.getOwner().getEmail().equals(email)) {
+            log.error("Tentativa de acesso não autorizado de {} ao segredo ID {}", email, id);
             throw new RuntimeException("Você não tem permissão para editar esta senha!");
         }
 
@@ -65,16 +69,19 @@ public class SecretService {
         secret.setEncryptedTotpKey(encryptionService.encrypt(request.password()));
 
         Secret updated = secretRepository.save(secret);
+        log.info("Credencial atualizada para {}: {}", email, request.title());
         return convertToResponse(updated);
     }
 
-    @Transactional
+    // MÉTODO QUE ESTAVA FALTANDO
+    @Transactional(readOnly = true)
     public SecretResponseDTO findById(Long id, String email) {
         Secret secret = secretRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Senha não encontrada!"));
+                .orElseThrow(() -> new RuntimeException("Segredo não encontrado!"));
 
         if (!secret.getOwner().getEmail().equals(email)) {
-            throw new RuntimeException("Acesso negado!");
+            log.error("Acesso negado de {} ao segredo ID {}", email, id);
+            throw new RuntimeException("Você não tem permissão para ver esta senha!");
         }
         return convertToResponse(secret);
     }
@@ -89,6 +96,7 @@ public class SecretService {
         }
 
         secretRepository.delete(secret);
+        log.warn("Credencial ID {} deletada pelo usuário {}", id, email);
     }
 
     public List<SecretResponseDTO> findAllByUser(String email) {

@@ -25,6 +25,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Captura erros de autenticação (Login/Verify/Register)
+     */
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthExceptions(AuthException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+        body.put("status", HttpStatus.UNAUTHORIZED.value());
+
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeExceptions(RuntimeException ex) {
         Map<String, Object> body = new HashMap<>();
