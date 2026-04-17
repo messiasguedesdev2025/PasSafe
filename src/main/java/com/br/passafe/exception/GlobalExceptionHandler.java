@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericExceptions(Exception ex) {
+        ex.printStackTrace();
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("message", "Ocorreu um erro interno no servidor.");
