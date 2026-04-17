@@ -21,6 +21,11 @@ spring:
       hibernate:
         format_sql: true
 
+# Credenciais para acessar o Swagger (Login da Página de Documentação)
+swagger:
+  user: admin
+  password: admin123
+
 # Chaves de Segurança
 passafe:
   encryption:
