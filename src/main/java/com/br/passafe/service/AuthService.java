@@ -16,7 +16,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j // Ativa os Logs profissionais
+@Slf4j
 public class AuthService {
 
     private final UsuarioRepository usuarioRepository;
@@ -29,6 +29,7 @@ public class AuthService {
         }
 
         Usuario usuario = new Usuario();
+        usuario.setUsername(request.username()); // Salva o nome de usuário
         usuario.setEmail(request.email());
         usuario.setPassword(passwordEncoder.encode(request.password()));
         usuario.setActivated(false);
@@ -39,8 +40,8 @@ public class AuthService {
 
         usuarioRepository.save(usuario);
 
-        log.info("Novo registro solicitado para o e-mail: {}", request.email());
-        log.warn("CÓDIGO DE VERIFICAÇÃO GERADO: {}", code);
+        log.info("REGISTRO: {} ({})", request.email(), request.username());
+        log.warn("CÓDIGO DE VERIFICAÇÃO: {}", code);
     }
 
     public void verify(VerifyRequestDTO request) {
@@ -64,7 +65,7 @@ public class AuthService {
         usuario.setVerificationCodeExpiresAt(null);
         usuarioRepository.save(usuario);
         
-        log.info("Conta ativada com sucesso para o e-mail: {}", request.email());
+        log.info("Conta ativada com sucesso: {}", request.email());
     }
 
     public String login(LoginRequestDTO request) {
@@ -79,7 +80,6 @@ public class AuthService {
             throw new AuthException("E-mail ou senha incorretos!");
         }
 
-        log.info("Login realizado com sucesso: {}", request.email());
-        return tokenService.generateToken(usuario.getEmail());
+        return tokenService.generateToken(usuario.email());
     }
 }

@@ -23,9 +23,17 @@ public class AuthController {
         return ResponseEntity.status(201).build();
     }
 
+    // Ativação por E-mail
     @PostMapping("/verify")
     public ResponseEntity<Void> verify(@RequestBody @Valid VerifyRequestDTO request) {
         authService.verify(request);
+        return ResponseEntity.ok().build();
+    }
+
+    // Ativação por SMS (Telefone)
+    @PostMapping("/verify-phone")
+    public ResponseEntity<Void> verifyPhone(@RequestBody @Valid VerifyRequestDTO request) {
+        authService.verifyPhone(request.email(), request.code());
         return ResponseEntity.ok().build();
     }
 

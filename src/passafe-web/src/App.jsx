@@ -1,8 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Register from './pages/Register'; // Importando a tela de cadastro
+import Verify from './pages/Verify';
 import Dashboard from './pages/Dashboard';
 import AddSecret from './pages/AddSecret';
+import PasswordGenerator from './pages/PasswordGenerator';
 
 // Componente para proteger rotas que exigem autenticação
 const PrivateRoute = ({ children }) => {
@@ -17,10 +20,13 @@ function App() {
         {/* Rota de Login */}
         <Route path="/login" element={<Login />} />
         
-        {/* Rota de Cadastro (se você criar uma) */}
-        {/* <Route path="/register" element={<Register />} /> */}
+        {/* CORREÇÃO: Habilitando a rota de Cadastro */}
+        <Route path="/register" element={<Register />} />
+        
+        {/* Rota de Verificação */}
+        <Route path="/verify" element={<Verify />} />
 
-        {/* Rotas Protegidas (exigem Token JWT) */}
+        {/* Rotas Protegidas */}
         <Route 
           path="/dashboard" 
           element={
@@ -37,8 +43,16 @@ function App() {
             </PrivateRoute>
           } 
         />
+        <Route 
+          path="/generator" 
+          element={
+            <PrivateRoute>
+              <PasswordGenerator />
+            </PrivateRoute>
+          } 
+        />
 
-        {/* Redireciona para o login se a rota não for encontrada ou for a raiz */}
+        {/* Redireciona para o login se a rota não for encontrada */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
