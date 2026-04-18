@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import logoLight from '../assets/PasSafe.png';
-import logoDark from '../assets/logo-dark2.png';
+import logoLight from '../assets/Logo -light.png';
+import logoDark from '../assets/logo-dark3.png';
 import { FiMail, FiLock, FiSun, FiMoon } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -68,11 +68,10 @@ const Login = () => {
 
       <div style={{...styles.card, backgroundColor: theme.card, border: isDarkMode ? '1px solid #334155' : '1px solid #f0f0f0'}}>
         <div style={styles.logoContainer}>
-          {/* TEXTO LOGIN REMOVIDO */}
           <img 
             src={isDarkMode ? logoDark : logoLight} 
             alt="PasSafe Logo" 
-            style={{...styles.logoImage, backgroundColor: 'transparent'}} 
+            style={styles.logoImage} 
           />
         </div>
 
@@ -141,7 +140,8 @@ const styles = {
   themeBtn: { background: 'none', border: '1px solid #ddd', padding: '8px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center' },
   card: { padding: '50px', borderRadius: '20px', boxShadow: '0 10px 50px rgba(0,0,0,0.1)', width: '90%', maxWidth: '480px', zIndex: 10, transition: '0.3s' },
   logoContainer: { textAlign: 'center', marginBottom: '35px' },
-  logoImage: { width: '250px', height: 'auto', marginBottom: '5px', display: 'block', marginLeft: 'auto', marginRight: 'auto' },
+  // TAMANHO UNIFICADO: 280px
+  logoImage: { width: '280px', height: 'auto', marginBottom: '5px', display: 'block', marginLeft: 'auto', marginRight: 'auto', backgroundColor: 'transparent' },
   form: { display: 'flex', flexDirection: 'column', gap: '22px' },
   inputWrapper: { position: 'relative', display: 'flex', alignItems: 'center' },
   icon: { position: 'absolute', left: '18px', color: '#9ca3af', fontSize: '22px' }, 

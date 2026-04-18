@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import logoLight from '../assets/PasSafe.png';
-import logoDark from '../assets/logo-dark2.png';
+import logoLight from '../assets/Logo -light.png';
+import logoDark from '../assets/logo-dark3.png'; // Usando a mesma logo dark do login
 import { FiMail, FiLock, FiUser, FiSun, FiMoon } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -64,8 +64,7 @@ const Register = () => {
 
       <div style={{...styles.card, backgroundColor: theme.card, border: isDarkMode ? '1px solid #334155' : '1px solid #f0f0f0'}}>
         <div style={styles.logoContainer}>
-          {/* TEXTO CADASTRO REMOVIDO */}
-          <img src={isDarkMode ? logoDark : logoLight} alt="PasSafe Logo" style={{...styles.logoImage, backgroundColor: 'transparent'}} />
+          <img src={isDarkMode ? logoDark : logoLight} alt="PasSafe Logo" style={styles.logoImage} />
         </div>
 
         <form onSubmit={handleRegister} style={styles.form}>
@@ -129,13 +128,14 @@ const styles = {
   langButtons: { display: 'flex', gap: '10px' },
   langBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#6b7280' },
   themeBtn: { background: 'none', border: '1px solid #ddd', padding: '8px', borderRadius: '10px', cursor: 'pointer', display: 'flex' },
-  card: { padding: '50px', borderRadius: '20px', boxShadow: '0 10px 50px rgba(0,0,0,0.1)', width: '90%', maxWidth: '480px', transition: '0.3s' },
+  card: { padding: '50px', borderRadius: '20px', boxShadow: '0 10px 50px rgba(0,0,0,0.1)', width: '90%', maxWidth: '480px', textAlign: 'center', transition: '0.3s' },
   logoContainer: { textAlign: 'center', marginBottom: '35px' },
-  logoImage: { width: '250px', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto' },
-  form: { display: 'flex', flexDirection: 'column', gap: '22px' },
+  // TAMANHO UNIFICADO: 280px
+  logoImage: { width: '280px', height: 'auto', display: 'block', marginLeft: 'auto', marginRight: 'auto', backgroundColor: 'transparent' },
+  form: { display: 'flex', flexDirection: 'column', gap: '18px' },
   inputWrapper: { position: 'relative', display: 'flex', alignItems: 'center' },
   icon: { position: 'absolute', left: '15px', color: '#9ca3af', fontSize: '20px', zIndex: 10 }, 
-  input: { width: '100%', padding: '14px 16px 14px 55px', borderRadius: '8px', border: 'none', color: '#ffffff', fontSize: '16px', outline: 'none' },
+  input: { width: '100%', padding: '14px 16px 14px 45px', borderRadius: '8px', border: 'none', color: '#ffffff', fontSize: '16px', outline: 'none' },
   button: { padding: '16px', backgroundImage:'linear-gradient(135deg, #0d9488 0%, #0f172a 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' },
   message: { textAlign: 'center', fontSize: '14px', margin: 0 },
   footer: { marginTop: '25px', textAlign: 'center', fontSize: '14px' },

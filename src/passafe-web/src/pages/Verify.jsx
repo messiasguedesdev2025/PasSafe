@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import logoLight from '../assets/PasSafe.png';
-import logoDark from '../assets/logo-dark.png';
+import logoDark from '../assets/logo-dark3.png';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
@@ -11,7 +11,6 @@ const Verify = () => {
   const query = new URLSearchParams(window.location.search);
   const email = query.get('email');
   
-  const [step, setStep] = useState(1);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -29,26 +28,11 @@ const Verify = () => {
     document.body.style.backgroundColor = isDarkMode ? '#0f172a' : '#ffffff';
   }, [isDarkMode]);
 
-  const handleVerifyEmail = async (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       await api.post('/auth/verify', { email, code });
-      setMessage(t('success_email'));
-      setStep(2);
-      setCode('');
-    } catch (err) {
-      setMessage(t('error_code'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyPhone = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await api.post('/auth/verify-phone', { email, code });
       setMessage(t('success_full'));
       setTimeout(() => window.location.href = '/login', 2000);
     } catch (err) {
@@ -79,23 +63,19 @@ const Verify = () => {
       </div>
 
       <div style={{...styles.card, backgroundColor: theme.card, border: isDarkMode ? '1px solid #334155' : '1px solid #f0f0f0'}}>
-        <img src={isDarkMode ? logoDark : logoLight} alt="PasSafe Logo" style={styles.logoImage} />
+        <img src={isDarkMode ? logoDark : logoLight} alt="PasSafe Logo" style={{...styles.logoImage, width: isDarkMode ? '280px' : '380px', backgroundColor: 'transparent'}} />
         
-        <h2 style={{...styles.title, color: theme.text}}>
-          {step === 1 ? t('verify_email_title') : t('verify_sms_title')}
-        </h2>
+        <h2 style={{...styles.title, color: theme.text}}>{t('verify_email_title')}</h2>
         
         <p style={{...styles.subtitle, color: theme.subtext}}>
-          {step === 1 
-            ? `${t('verify_email_sub')} ${email}` 
-            : t('verify_sms_sub')}
+          {t('verify_email_sub')} <strong>{email}</strong>
         </p>
 
-        <form onSubmit={step === 1 ? handleVerifyEmail : handleVerifyPhone} style={styles.form}>
+        <form onSubmit={handleVerify} style={styles.form}>
           <input
             type="text"
-            placeholder={step === 1 ? "000000" : "0000"}
-            maxLength={step === 1 ? 6 : 4}
+            placeholder="000000"
+            maxLength={6}
             value={code}
             onChange={(e) => setCode(e.target.value)}
             style={{...styles.input, backgroundColor: theme.inputBg}}
@@ -120,7 +100,7 @@ const styles = {
   langBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 'bold', color: '#6b7280' },
   themeBtn: { background: 'none', border: '1px solid #ddd', padding: '8px', borderRadius: '10px', cursor: 'pointer', display: 'flex' },
   card: { padding: '50px', borderRadius: '20px', boxShadow: '0 10px 50px rgba(0,0,0,0.1)', width: '90%', maxWidth: '480px', textAlign: 'center', transition: '0.3s' },
-  logoImage: { width: '180px', marginBottom: '20px' },
+  logoImage: { height: 'auto', marginBottom: '20px', display: 'block', marginLeft: 'auto', marginRight: 'auto' },
   title: { fontSize: '22px', marginBottom: '10px' },
   subtitle: { fontSize: '14px', marginBottom: '25px' },
   form: { display: 'flex', flexDirection: 'column', gap: '20px' },

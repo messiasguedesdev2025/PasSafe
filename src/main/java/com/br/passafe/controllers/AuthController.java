@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -17,23 +19,20 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> healthCheck() {
+        return ResponseEntity.ok(Map.of("status", "UP", "message", "O Backend do PasSafe está online!"));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid UsuarioRequestDTO request) {
         authService.register(request);
         return ResponseEntity.status(201).build();
     }
 
-    // Ativação por E-mail
     @PostMapping("/verify")
     public ResponseEntity<Void> verify(@RequestBody @Valid VerifyRequestDTO request) {
         authService.verify(request);
-        return ResponseEntity.ok().build();
-    }
-
-    // Ativação por SMS (Telefone)
-    @PostMapping("/verify-phone")
-    public ResponseEntity<Void> verifyPhone(@RequestBody @Valid VerifyRequestDTO request) {
-        authService.verifyPhone(request.email(), request.code());
         return ResponseEntity.ok().build();
     }
 
